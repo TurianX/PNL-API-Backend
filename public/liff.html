@@ -16,36 +16,39 @@
   </div>
 
   <script>
-    (async () => {
-      const LIFF_ID = "2008267947-m1yqJ5Wk";
-      try {
-        if (!window.liff) { alert("LINE LIFF SDK failed to load."); return; }
-        await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser: true });
-        if (!liff.isLoggedIn()) return liff.login({ redirectUri: location.href });
+  (async () => {
+    const LIFF_ID = "2008288983-4zwOl9qz";          // your LIFF ID
+    const DEFAULT_REDIRECT = "https://pnlassistant.pnlgroup.co.th/"; // your Carrd
 
-        const params = new URLSearchParams(location.search);
-        const next = params.get("next") || "/";
+    try {
+      await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser: true });
+      if (!liff.isLoggedIn()) return liff.login({ redirectUri: location.href });
 
-        const idToken = liff.getIDToken();
-        const profile = await liff.getProfile();
+      // read ?next=... (optional)
+      const params = new URLSearchParams(location.search);
+      const next = params.get("next") || DEFAULT_REDIRECT;
 
-        const r = await fetch("/liff/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({ idToken, profile }),
-        });
-        if (!r.ok) { alert("Failed to create session"); return; }
+      const idToken = liff.getIDToken();
+      const profile = await liff.getProfile();
 
-        const me = await fetch("/me", { credentials: "include" });
-        if (me.status !== 200) { alert("Session not ready yet"); return; }
+      const r = await fetch("/liff/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ idToken, profile }),
+      });
+      if (!r.ok) { alert("Failed to create session"); return; }
 
-        try { location.href = new URL(next, location.origin).toString(); }
-        catch { location.href = "/"; }
-      } catch (e) {
-        alert("LIFF init failed: " + (e.code || "") + " " + (e.message || e));
-      }
-    })();
-  </script>
+      // sanity check the session cookie
+      const me = await fetch("/me", { credentials: "include" });
+      if (me.status !== 200) { alert("Session not ready yet"); return; }
+
+      // Go to Carrd (or ?next if provided)
+      location.href = next;
+    } catch (e) {
+      alert("LIFF init failed: " + (e.code || "") + " " + (e.message || e));
+    }
+  })();
+</script>
 </body>
 </html>
