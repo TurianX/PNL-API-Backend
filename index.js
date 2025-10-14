@@ -1,7 +1,7 @@
 // index.js
 import express from "express";
 import cookieSession from "cookie-session";
-import cors from 'cors';
+// import cors from 'cors';
 import crypto from "crypto";
 import dotenv from "dotenv";
 import * as jose from "jose";
@@ -40,22 +40,22 @@ app.use(
     })
 );
 app.use(express.json());
-const CARRD_ORIGINS = [
-    'https://pnlassistant.pnlgroup.co.th'
-];
-const BACKEND_ORIGIN = process.env.BASE_URL;
+// const CARRD_ORIGINS = [
+//     'https://pnlassistant.pnlgroup.co.th'
+// ];
+// const BACKEND_ORIGIN = process.env.BASE_URL;
 
-const ALLOWLIST = [...CARRD_ORIGINS, BACKEND_ORIGIN].filter(Boolean);
+// const ALLOWLIST = [...CARRD_ORIGINS, BACKEND_ORIGIN].filter(Boolean);
 
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin || ALLOWLIST.includes(origin)) return callback(null, true);
-    return callback(new Error("Not allowed by CORS: " + origin));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
-}));
+// app.use(cors({
+//   origin(origin, callback) {
+//     if (!origin || ALLOWLIST.includes(origin)) return callback(null, true);
+//     return callback(new Error("Not allowed by CORS: " + origin));
+//   },
+//   credentials: true,
+//   methods: ["GET", "POST", "OPTIONS"],
+//   allowedHeaders: ["Content-Type"],
+// }));
 
 app.use(express.static("public"));
 
