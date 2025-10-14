@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Staff Login - PNL Company</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <img id="avatar" class="avatar" src="" alt="avatar" />
+      <div class="meta">
+        <div id="hello">Welcome</div>
+        <small><a href="/logout" id="logout">Logout</a></small>
+      </div>
+    </header>
+
+    <section class="card">
+      <h2 class="m0 mb12">Sign in to continue</h2>
+      <p class="m0 mb16" style="color:var(--muted)">
+        Enter your staff ID to verify your role.
+      </p>
+
+      <form id="staffForm" class="form">
+        <label class="label" for="staffId">Staff ID</label>
+        <input id="staffId" class="input" inputmode="numeric" pattern="[0-9]*" placeholder="Staff ID : xxxxx" required />
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+      </form>
+
+      <div id="result" class="result mb0" style="display:none"></div>
+    </section>
+
+    <p class="center" style="color:var(--muted);margin-top:16px">
+      ©PNL Co., Ltd. All rights reserved.
+    </p>
+  </div>
+  <script src="https://sdk.userbase.com/2/userbase.js"></script>
+    <script>
+      userbase.init({ appId: "48e97faf-0289-46f2-8fea-4cb706a73480" });
+      console.log("Userbase SDK loaded:", typeof userbase);
+    </script>
+
+  <script src="/script.js"></script>
+</body>
+</html>

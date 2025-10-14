@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Logging in…</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <div class="container">
+    <section class="card center">
+      <h2 class="m0 mb12">Connecting your LINE account…</h2>
+      <p class="m0" style="color:var(--muted)">Please wait a moment.</p>
+    </section>
+  </div>
+
+  <script>
+    (async () => {
+      const LIFF_ID = "2008267947-m1yqJ5Wk";
+      try {
+        if (!window.liff) { alert("LINE LIFF SDK failed to load."); return; }
+        await liff.init({ liffId: LIFF_ID, withLoginOnExternalBrowser: true });
+        if (!liff.isLoggedIn()) return liff.login({ redirectUri: location.href });
+
+        const params = new URLSearchParams(location.search);
+        const next = params.get("next") || "/";
+
+        const idToken = liff.getIDToken();
+        const profile = await liff.getProfile();
+
+        const r = await fetch("/liff/session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ idToken, profile }),
+        });
+        if (!r.ok) { alert("Failed to create session"); return; }
+
+        const me = await fetch("/me", { credentials: "include" });
+        if (me.status !== 200) { alert("Session not ready yet"); return; }
+
+        try { location.href = new URL(next, location.origin).toString(); }
+        catch { location.href = "/"; }
+      } catch (e) {
+        alert("LIFF init failed: " + (e.code || "") + " " + (e.message || e));
+      }
+    })();
+  </script>
+</body>
+</html>
