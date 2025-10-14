@@ -10,8 +10,12 @@
 <body>
   <div class="container">
     <section class="card center">
-      <h2 class="m0 mb12">Connecting your LINE account…</h2>
-      <p class="m0" style="color:var(--muted)">Please wait a moment.</p>
+      <div class="loading">
+        <div class="spinner"></div>
+        <h2 class="m0">Connecting your LINE account…</h2>
+        <p class="m0" style="color:var(--muted)">Please wait a moment.</p>
+      </div>
+      <div id="err" class="result error" style="display:none; margin-top:12px;"></div>
     </section>
   </div>
 

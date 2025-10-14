@@ -1,4 +1,4 @@
-/* ====== Base ====== */
+/* ====== Theme (Purple / Dark) ====== */
 :root{
   --bg: #0f0f12;
   --card: #15161a;
@@ -6,10 +6,10 @@
   --muted: #a6a7ab;
   --line: #23242a;
 
-  --brand: #6c5ce7;           /* Purple primary */
-  --brand-600: #5b4bdb;
-  --brand-700: #4b3ec9;
-  --brand-800: #3f35ad;
+  --brand:      #6c5ce7;  /* primary */
+  --brand-600:  #5b4bdb;
+  --brand-700:  #4b3ec9;
+  --brand-800:  #3f35ad;
 
   --success: #22c55e;
   --danger:  #ef4444;
@@ -17,155 +17,111 @@
 }
 
 * { box-sizing: border-box; }
-
 html, body{
   margin:0; padding:0;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        "Apple Color Emoji", "Segoe UI Emoji";
 }
-
 a{ color: var(--brand); text-decoration: none; }
 a:hover{ text-decoration: underline; }
 
-/* ====== Layout ====== */
+/* ====== Responsive shell ====== */
 .container{
   width: 100%;
-  max-width: 420px;            /* mobile-first */
+  max-width: 420px;
   margin: 0 auto;
   padding: 16px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+.center{ text-align: center; }
 
+/* ====== Card ====== */
 .card{
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: 16px;
-  padding: 16px;
+  padding: 20px;
   box-shadow: 0 8px 24px rgba(0,0,0,.25);
 }
 
-/* ====== Header ====== */
+/* ====== Header (optional on staff.html) ====== */
 .header{
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
 }
-
 .avatar{
-  width: 56px;                 /* consistent for everyone */
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #27282f;
-  border: 1px solid var(--line);
+  width: 56px; height: 56px; border-radius: 50%;
+  object-fit: cover; background: #27282f; border: 1px solid var(--line);
 }
-
-.header .meta{
-  display:flex;
-  flex-direction: column;
-  min-width: 0;
-}
-#hello{
-  font-weight: 600;
-  font-size: 16px;
-}
-.header small a{
-  color: var(--muted);
-}
+.header .meta{ display:flex; flex-direction: column; min-width:0; }
+#hello{ font-weight: 600; font-size: 16px; }
+.header small a{ color: var(--muted); }
 .header small a:hover{ color: var(--text); }
 
 /* ====== Form ====== */
-.form{
-  display: grid;
-  gap: 12px;
-}
-.label{
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: .02em;
-}
+.form{ display: grid; gap: 12px; }
+.label{ font-size: 12px; color: var(--muted); letter-spacing:.02em; }
 .input{
-  width: 100%;
-  height: 44px;
-  padding: 10px 12px;
-  color: var(--text);
-  background: #101114;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  outline: none;
-  transition: border-color .15s ease, background .15s ease;
+  width: 100%; height: 44px; padding: 10px 12px;
+  color: var(--text); background: #101114;
+  border: 1px solid var(--line); border-radius: 12px; outline: none;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
 }
 .input:focus{
   border-color: var(--brand);
   background: #0e0f13;
+  box-shadow: 0 0 0 3px rgba(108,92,231,.18);
 }
 
 /* ====== Buttons ====== */
 .btn{
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 44px;
-  padding: 0 14px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  font-weight: 600;
-  transition: transform .02s ease, background .15s ease, border .15s ease;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 14px; border-radius: 12px; border: 1px solid transparent;
+  cursor: pointer; font-weight: 600;
+  transition: transform .02s ease, background .15s ease, border .15s ease, opacity .15s;
 }
 .btn:active{ transform: translateY(1px); }
-
-.btn-primary{
-  color: #fff;
-  background: var(--brand);
-  border-color: var(--brand-700);
-}
+.btn[disabled]{ opacity:.65; cursor: not-allowed; }
+.btn-primary{ color:#fff; background: var(--brand); border-color: var(--brand-700); }
 .btn-primary:hover{ background: var(--brand-600); }
 .btn-primary:active{ background: var(--brand-700); }
+.w-100{ width:100%; }
 
-/* Full width on mobile */
-.w-100{ width: 100%; }
-
-/* ====== Result / Alerts ====== */
+/* ====== Alerts / Result ====== */
 .result{
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  background: #101114;
-  border: 1px solid var(--line);
+  margin-top: 12px; padding: 12px;
+  border-radius: 12px; background: #101114; border: 1px solid var(--line);
   color: var(--text);
 }
-.result.success{
-  border-color: rgba(34,197,94,.35);
-  background: rgba(34,197,94,.10);
-}
-.result.error{
-  border-color: rgba(239,68,68,.35);
-  background: rgba(239,68,68,.10);
-}
+.result.success{ border-color: rgba(34,197,94,.35); background: rgba(34,197,94,.10); }
+.result.error{   border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); }
 
-/* Role pill */
+/* Pill */
 .pill{
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--brand-800);
-  color: #fff;
-  font-weight: 600;
-  font-size: 12px;
+  display:inline-block; padding:4px 10px; border-radius:999px;
+  background: var(--brand-800); color:#fff; font-weight:600; font-size:12px;
 }
 
-/* Small helpers */
-.m0{ margin: 0; }
-.mb8{ margin-bottom: 8px; }
-.mb12{ margin-bottom: 12px; }
-.mb16{ margin-bottom: 16px; }
-.center{ text-align: center; }
+/* Margins */
+.m0{ margin:0; } .mb8{ margin-bottom:8px; } .mb12{ margin-bottom:12px; } .mb16{ margin-bottom:16px; }
 
-/* ====== Desktop polish ====== */
+/* ====== LIFF loader extras ====== */
+.loading{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.spinner{
+  width:28px; height:28px; border:3px solid rgba(255,255,255,.15);
+  border-top-color:#fff; border-radius:50%; animation:spin 1s linear infinite;
+}
+@keyframes spin{ to{ transform: rotate(360deg); } }
+
+/* Desktop polish */
 @media (min-width: 480px){
   .container{ padding: 24px; }
-  .card{ padding: 20px; }
+  .card{ padding: 24px; }
 }

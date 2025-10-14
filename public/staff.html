@@ -1,46 +1,57 @@
 <!doctype html>
-<html>
+<html lang="th">
 <head>
   <meta charset="utf-8" />
-  <title>Staff Login - PNL Company</title>
+  <title>เข้าสู่ระบบพนักงาน | PNL Company</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <div class="container">
-    <header class="header">
-      <img id="avatar" class="avatar" src="" alt="avatar" />
-      <div class="meta">
-        <div id="hello">Welcome</div>
-        <small><a href="/logout" id="logout">Logout</a></small>
-      </div>
-    </header>
-
-    <section class="card">
-      <h2 class="m0 mb12">Sign in to continue</h2>
-      <p class="m0 mb16" style="color:var(--muted)">
-        Enter your staff ID to verify your role.
-      </p>
+    <section class="card center">
+      <h2 class="m0 mb12">เข้าสู่ระบบพนักงาน</h2>
+      <p class="m0 mb16" style="color:var(--muted)">กรุณาใส่รหัสพนักงานของคุณ</p>
 
       <form id="staffForm" class="form">
-        <label class="label" for="staffId">Staff ID</label>
-        <input id="staffId" class="input" inputmode="numeric" pattern="[0-9]*" placeholder="Staff ID : xxxxx" required />
-        <button type="submit" class="btn btn-primary w-100">Login</button>
+        <input
+          id="staffId"
+          class="input"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          placeholder="รหัสพนักงาน"
+          required
+        />
+        <button type="submit" class="btn btn-primary w-100">Login →</button>
       </form>
 
-      <div id="result" class="result mb0" style="display:none"></div>
+      <div id="result" class="result" style="display:none"></div>
     </section>
 
     <p class="center" style="color:var(--muted);margin-top:16px">
       ©PNL Co., Ltd. All rights reserved.
     </p>
   </div>
-  <script src="https://sdk.userbase.com/2/userbase.js"></script>
-    <script>
-      userbase.init({ appId: "48e97faf-0289-46f2-8fea-4cb706a73480" });
-      console.log("Userbase SDK loaded:", typeof userbase);
-    </script>
 
+  <!-- Userbase -->
+  <script src="https://sdk.userbase.com/2/userbase.js"></script>
+  <script>
+    userbase.init({ appId: "48e97faf-0289-46f2-8fea-4cb706a73480" });
+  </script>
+
+  <!-- Main logic -->
   <script src="/script.js"></script>
+
+  <!-- Auto-close helper after success -->
+  <script>
+    document.addEventListener("staffLoginSuccess", () => {
+      try {
+        if (window.liff && liff.closeWindow) {
+          setTimeout(() => liff.closeWindow(), 2000);
+        }
+      } catch (e) {
+        console.warn("Could not close LIFF window:", e);
+      }
+    });
+  </script>
 </body>
 </html>
