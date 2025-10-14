@@ -318,6 +318,14 @@ app.get('/userbase/bootstrap', (req, res) => {
 /* -------------------------------
    ✅ 7) Start
 -------------------------------- */
+
+/* -------------------------------
+   🌐 Redirect root → LIFF login
+-------------------------------- */
+app.get("/", (req, res) => {
+  res.redirect("/liff.html?next=/staff");
+});
+
 app.listen(PORT, () => {
     console.log(`✅ Server on http://localhost:${PORT}`);
     console.log(`➡ Open LIFF via: ${BASE_URL}/liff.html?next=/staff`);
