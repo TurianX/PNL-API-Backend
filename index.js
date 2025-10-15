@@ -40,29 +40,23 @@ app.use(
     })
 );
 app.use(express.json());
-// --- CORS for Carrd + same-site dev ---
-const CARRD_ORIGINS = [
-  "https://pnlassistant.pnlgroup.co.th",   // your Carrd page
-];
-const SELF = process.env.BASE_URL;         // your Render URL (optional allow)
+// const CARRD_ORIGINS = [
+//     'https://pnlassistant.pnlgroup.co.th'
+// ];
+// const BACKEND_ORIGIN = process.env.BASE_URL;
 
-const ALLOWLIST = [...CARRD_ORIGINS, SELF].filter(Boolean);
-app.use(cors({
-  origin(origin, cb) {
-    // allow same-origin requests (no Origin header) and allowed domains
-    if (!origin || ALLOWLIST.includes(origin)) return cb(null, true);
-    return cb(new Error("Not allowed by CORS: " + origin));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type"],
-}));
+// const ALLOWLIST = [...CARRD_ORIGINS, BACKEND_ORIGIN].filter(Boolean);
 
-// make sure preflight is handled
-app.options("*", cors({
-  origin: ALLOWLIST,
-  credentials: true,
-}));
+// app.use(cors({
+//   origin(origin, callback) {
+//     if (!origin || ALLOWLIST.includes(origin)) return callback(null, true);
+//     return callback(new Error("Not allowed by CORS: " + origin));
+//   },
+//   credentials: true,
+//   methods: ["GET", "POST", "OPTIONS"],
+//   allowedHeaders: ["Content-Type"],
+// }));
+
 app.use(express.static("public"));
 
 // Simple request logger (timestamp + method + path)
