@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Login Successful | PNL Company</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg-start: #eef3ff;
+      --bg-mid:   #e9efff;
+      --bg-end:   #e3ebff;
+      --text: #1f2733;
+      --muted: #7a8699;
+      --brand: #6f8cf7;
+    }
+    html,body{
+      margin:0; padding:0;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      background:
+        radial-gradient(1200px 800px at 20% 10%, var(--bg-start), transparent 60%),
+        radial-gradient(900px 900px at 85% 85%, var(--bg-end), transparent 60%),
+        linear-gradient(135deg, var(--bg-start), var(--bg-mid) 55%, var(--bg-end));
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      color: var(--text);
+      text-align:center;
+    }
+    h1{ font-size:22px; margin-bottom:8px; color:var(--brand); }
+    p{ color:var(--muted); margin:0 0 20px; }
+    .btn{
+      background: var(--brand);
+      color:#fff;
+      border:none;
+      padding:12px 24px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+      box-shadow: 0 4px 15px rgba(111,140,247,.3);
+    }
+  </style>
+</head>
+<body>
+  <h1>Login Successful</h1>
+  <p>You may now close this window and return to LINE.</p>
+  <button class="btn" onclick="window.close()">Close Window</button>
+  <p style="color:var(--muted);margin-top:30px;font-size:13px;">©PNL Co., Ltd.</p>
+</body>
+</html>
