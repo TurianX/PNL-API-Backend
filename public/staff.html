@@ -8,40 +8,34 @@
 </head>
 <body>
   <div class="container">
-    <section class="card center">
-      <h2 class="m0 mb12">เข้าสู่ระบบพนักงาน</h2>
-      <p class="m0 mb16" style="color:var(--muted)">กรุณาใส่รหัสพนักงานของคุณ</p>
-
-      <form id="staffForm" class="form">
+    <section class="card">
+      <form id="staffForm" class="form" autocomplete="off">
         <input
           id="staffId"
           class="input"
           inputmode="numeric"
           pattern="[0-9]*"
-          placeholder="รหัสพนักงาน"
+          placeholder="กรุณาใส่รหัสพนักงาน"
           required
         />
         <button type="submit" class="btn btn-primary w-100">Login →</button>
       </form>
 
-      <div id="result" class="result" style="display:none"></div>
+      <!-- kept for status; hidden by default, script.js will show it -->
+      <div id="result" class="result"></div>
     </section>
-
-    <p class="center" style="color:var(--muted);margin-top:16px">
-      ©PNL Co., Ltd. All rights reserved.
-    </p>
   </div>
 
-  <!-- Userbase -->
-  <script src="https://sdk.userbase.com/2/userbase.js"></script>
-  <script>
-    userbase.init({ appId: "48e97faf-0289-46f2-8fea-4cb706a73480" });
-  </script>
+  <p class="footer">©PNL Co., Ltd. All rights reserved.</p>
 
-  <!-- Main logic -->
+  <!-- Userbase (unchanged) -->
+  <script src="https://sdk.userbase.com/2/userbase.js"></script>
+  <script>userbase.init({ appId: "48e97faf-0289-46f2-8fea-4cb706a73480" });</script>
+
+  <!-- Main logic (unchanged) -->
   <script src="/script.js"></script>
 
-  <!-- Auto-close helper after success -->
+  <!-- Auto-close LIFF after successful bind (unchanged) -->
   <script>
     document.addEventListener("staffLoginSuccess", () => {
       try {

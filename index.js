@@ -40,23 +40,6 @@ app.use(
     })
 );
 app.use(express.json());
-// const CARRD_ORIGINS = [
-//     'https://pnlassistant.pnlgroup.co.th'
-// ];
-// const BACKEND_ORIGIN = process.env.BASE_URL;
-
-// const ALLOWLIST = [...CARRD_ORIGINS, BACKEND_ORIGIN].filter(Boolean);
-
-// app.use(cors({
-//   origin(origin, callback) {
-//     if (!origin || ALLOWLIST.includes(origin)) return callback(null, true);
-//     return callback(new Error("Not allowed by CORS: " + origin));
-//   },
-//   credentials: true,
-//   methods: ["GET", "POST", "OPTIONS"],
-//   allowedHeaders: ["Content-Type"],
-// }));
-
 app.use(express.static("public"));
 
 // Simple request logger (timestamp + method + path)
