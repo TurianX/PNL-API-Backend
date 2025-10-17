@@ -171,6 +171,77 @@ async function unlinkRichMenuFromUser(userId) {
     console.log(`[RICHMENU] Unlinked user ${userId}`);
 }
 
+// ===== Minimal Notion fetch + poller =====
+const POLL_INTERVAL_MS = Number(process.env.RICHMENU_POLL_INTERVAL_MS || 10000); // 10s
+const DESIRED_ACTIVE_ROLE = 'PC'; // who should see the Notion menu
+
+async function fetchAllBoundLineUsers() {
+  // Pull only pages that have a Bound Line User ID (one query page)
+  const url = `https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`;
+  const payload = {
+    page_size: 50,
+    filter: {
+      and: [
+        { property: "Bound Line User ID", rich_text: { is_not_empty: true } }
+      ]
+    }
+  };
+
+  const r = await axios.post(url, payload, {
+    headers: {
+      Authorization: `Bearer ${NOTION_API_KEY}`,
+      "Notion-Version": NOTION_VERSION,
+      "Content-Type": "application/json",
+    },
+  });
+
+  const rows = [];
+  for (const page of r.data.results || []) {
+    const props = page.properties || {};
+    rows.push({
+      userId: props["Bound Line User ID"]?.rich_text?.[0]?.plain_text || "",
+      status: props["Status"]?.select?.name || "",
+      role:   props["Role"]?.select?.name || "",
+      pageId: page.id,
+    });
+  }
+  return rows;
+}
+
+async function pollRichMenusOnce() {
+  try {
+    const rows = await fetchAllBoundLineUsers();
+    for (const row of rows) {
+      if (!row.userId) continue;
+
+      // Decide desired menu: Active + PC → Notion; else → Login
+      const desired = (row.status === 'Active' && row.role === DESIRED_ACTIVE_ROLE)
+        ? process.env.RICHMENU_ID_NOTION
+        : process.env.RICHMENU_ID_LOGIN;
+
+      // Fire-and-forget: link the desired menu (LINE ignores if already same)
+      try {
+        await linkRichMenuToUser(row.userId, desired);
+        console.log(`[AUTO] ${row.userId} → ${desired} (status=${row.status}, role=${row.role})`);
+      } catch (e) {
+        console.warn(`[AUTO] link failed for ${row.userId}:`, e.response?.data || e.message);
+      }
+
+      // Tiny delay to be kind to LINE API
+      await new Promise(res => setTimeout(res, 200));
+    }
+  } catch (e) {
+    console.error('[AUTO] poll error:', e.response?.data || e.message);
+  }
+}
+
+// Start the interval (optional: set env to 0 to disable)
+if (POLL_INTERVAL_MS > 0) {
+  console.log(`[AUTO] Polling every ${POLL_INTERVAL_MS}ms`);
+  pollRichMenusOnce().catch(()=>{});
+  setInterval(() => pollRichMenusOnce().catch(()=>{}), POLL_INTERVAL_MS);
+}
+
 /* -------------------------------
    ✅ 5) Staff page
 -------------------------------- */
