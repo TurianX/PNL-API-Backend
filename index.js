@@ -120,14 +120,10 @@ app.get("/logout", (req, res) => {
 -------------------------------- */
 async function fetchStaffRoleFromNotion(staffId) {
     const notionUrl = `https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`;
-
     const payload = {
-        filter: {
-            property: "Staff ID", // must match Notion property
-            number: { equals: Number(staffId) },
-        },
+        filter: { property: "Staff ID", number: { equals: Number(staffId) } },
+        page_size: 1,
     };
-
     const response = await axios.post(notionUrl, payload, {
         headers: {
             Authorization: `Bearer ${NOTION_API_KEY}`,
@@ -140,14 +136,14 @@ async function fetchStaffRoleFromNotion(staffId) {
     if (results.length === 0) throw new Error("Staff ID not found");
     const page = results[0];
 
-    const roleProp = page.properties?.["Role"];
-    const role = roleProp?.select?.name || "Unknown";
+    const props = page.properties || {};
+    const role = props["Role"]?.select?.name || "Unknown";
+    const status = props["Status"]?.select?.name || "Inactive";
     const name =
-        page.properties?.["Name"]?.title?.[0]?.plain_text ||
-        page.properties?.["Channel"]?.title?.[0]?.plain_text ||
-        "Unknown";
+        props["Name"]?.title?.[0]?.plain_text ||
+        props["Channel"]?.title?.[0]?.plain_text || "Unknown";
 
-    return { role, pageId: page.id, name };
+    return { role, status, pageId: page.id, name };
 }
 
 // ------------------ LINE Rich Menu Helpers (NEW) ------------------
@@ -176,70 +172,70 @@ const POLL_INTERVAL_MS = Number(process.env.RICHMENU_POLL_INTERVAL_MS || 10000);
 const DESIRED_ACTIVE_ROLE = 'PC'; // who should see the Notion menu
 
 async function fetchAllBoundLineUsers() {
-  // Pull only pages that have a Bound Line User ID (one query page)
-  const url = `https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`;
-  const payload = {
-    page_size: 50,
-    filter: {
-      and: [
-        { property: "Bound Line User ID", rich_text: { is_not_empty: true } }
-      ]
-    }
-  };
+    // Pull only pages that have a Bound Line User ID (one query page)
+    const url = `https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`;
+    const payload = {
+        page_size: 50,
+        filter: {
+            and: [
+                { property: "Bound Line User ID", rich_text: { is_not_empty: true } }
+            ]
+        }
+    };
 
-  const r = await axios.post(url, payload, {
-    headers: {
-      Authorization: `Bearer ${NOTION_API_KEY}`,
-      "Notion-Version": NOTION_VERSION,
-      "Content-Type": "application/json",
-    },
-  });
-
-  const rows = [];
-  for (const page of r.data.results || []) {
-    const props = page.properties || {};
-    rows.push({
-      userId: props["Bound Line User ID"]?.rich_text?.[0]?.plain_text || "",
-      status: props["Status"]?.select?.name || "",
-      role:   props["Role"]?.select?.name || "",
-      pageId: page.id,
+    const r = await axios.post(url, payload, {
+        headers: {
+            Authorization: `Bearer ${NOTION_API_KEY}`,
+            "Notion-Version": NOTION_VERSION,
+            "Content-Type": "application/json",
+        },
     });
-  }
-  return rows;
+
+    const rows = [];
+    for (const page of r.data.results || []) {
+        const props = page.properties || {};
+        rows.push({
+            userId: props["Bound Line User ID"]?.rich_text?.[0]?.plain_text || "",
+            status: props["Status"]?.select?.name || "",
+            role: props["Role"]?.select?.name || "",
+            pageId: page.id,
+        });
+    }
+    return rows;
 }
 
 async function pollRichMenusOnce() {
-  try {
-    const rows = await fetchAllBoundLineUsers();
-    for (const row of rows) {
-      if (!row.userId) continue;
+    try {
+        const rows = await fetchAllBoundLineUsers();
+        for (const row of rows) {
+            if (!row.userId) continue;
 
-      // Decide desired menu: Active + PC → Notion; else → Login
-      const desired = (row.status === 'Active' && row.role === DESIRED_ACTIVE_ROLE)
-        ? process.env.RICHMENU_ID_NOTION
-        : process.env.RICHMENU_ID_LOGIN;
+            // Decide desired menu: Active + PC → Notion; else → Login
+            const desired = (row.status === 'Active' && row.role === DESIRED_ACTIVE_ROLE)
+                ? process.env.RICHMENU_ID_NOTION
+                : process.env.RICHMENU_ID_LOGIN;
 
-      // Fire-and-forget: link the desired menu (LINE ignores if already same)
-      try {
-        await linkRichMenuToUser(row.userId, desired);
-        console.log(`[AUTO] ${row.userId} → ${desired} (status=${row.status}, role=${row.role})`);
-      } catch (e) {
-        console.warn(`[AUTO] link failed for ${row.userId}:`, e.response?.data || e.message);
-      }
+            // Fire-and-forget: link the desired menu (LINE ignores if already same)
+            try {
+                await linkRichMenuToUser(row.userId, desired);
+                console.log(`[AUTO] ${row.userId} → ${desired} (status=${row.status}, role=${row.role})`);
+            } catch (e) {
+                console.warn(`[AUTO] link failed for ${row.userId}:`, e.response?.data || e.message);
+            }
 
-      // Tiny delay to be kind to LINE API
-      await new Promise(res => setTimeout(res, 200));
+            // Tiny delay to be kind to LINE API
+            await new Promise(res => setTimeout(res, 200));
+        }
+    } catch (e) {
+        console.error('[AUTO] poll error:', e.response?.data || e.message);
     }
-  } catch (e) {
-    console.error('[AUTO] poll error:', e.response?.data || e.message);
-  }
 }
 
 // Start the interval (optional: set env to 0 to disable)
 if (POLL_INTERVAL_MS > 0) {
-  console.log(`[AUTO] Polling every ${POLL_INTERVAL_MS}ms`);
-  pollRichMenusOnce().catch(()=>{});
-  setInterval(() => pollRichMenusOnce().catch(()=>{}), POLL_INTERVAL_MS);
+    console.log(`[AUTO] Polling every ${POLL_INTERVAL_MS}ms`);
+    pollRichMenusOnce().catch(() => { });
+    setInterval(() => pollRichMenusOnce().catch(() => { }), POLL_INTERVAL_MS);
 }
 
 /* -------------------------------
@@ -271,19 +267,19 @@ app.post("/staff/role", async (req, res) => {
 
         console.log(`[${ts}] [ROLE] Lookup by ${viewer} → Staff ID: ${staffId}`);
 
-        const { role, pageId, name } = await fetchStaffRoleFromNotion(staffId);
+        const { role, status, pageId, name } = await fetchStaffRoleFromNotion(staffId);
 
         // --- Switch per-user rich menu based on role (NEW) ---
+        // --- Switch per-user rich menu based on Status + Role (matches poller) ---
         try {
             const userId = req.session.user.lineUserId;
-            if (role === "PC") {
-                await linkRichMenuToUser(userId, process.env.RICHMENU_ID_NOTION);
-                console.log(`[RICHMENU] Role PC → Notion menu linked for ${userId}`);
-            } else {
-                // fallback/default: keep or switch back to Login menu
-                await linkRichMenuToUser(userId, process.env.RICHMENU_ID_LOGIN);
-                console.log(`[RICHMENU] Non-PC role → Login menu linked for ${userId}`);
+            // Use the status returned from Notion
+            let desiredMenu = process.env.RICHMENU_ID_LOGIN; // default
+            if (status === "Active" && role === "PC") {
+                desiredMenu = process.env.RICHMENU_ID_NOTION;
             }
+            await linkRichMenuToUser(userId, desiredMenu);
+            console.log(`[RICHMENU] ${userId} → ${desiredMenu} (status=${status}, role=${role})`);
         } catch (err) {
             const msg = err.response?.data ? JSON.stringify(err.response.data) : err.message;
             console.error("[RICHMENU] switch error:", msg);
@@ -377,7 +373,7 @@ app.get('/userbase/bootstrap', (req, res) => {
    🌐 Redirect root → LIFF login
 -------------------------------- */
 app.get("/", (req, res) => {
-  res.redirect("/liff.html?next=/staff");
+    res.redirect("/liff.html?next=/staff");
 });
 
 app.listen(PORT, () => {
