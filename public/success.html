@@ -1,68 +1,42 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="utf-8" />
-  <title>Login Successful | PNL Company</title>
+  <title>เข้าสู่ระบบสำเร็จ | PNL Company</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root{
-      --bg-start: #eef3ff;
-      --bg-mid:   #e9efff;
-      --bg-end:   #e3ebff;
-      --text: #1f2733;
-      --muted: #7a8699;
-      --brand: #6f8cf7;
-    }
-    html,body{
-      margin:0; padding:0;
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      background:
-        radial-gradient(1200px 800px at 20% 10%, var(--bg-start), transparent 60%),
-        radial-gradient(900px 900px at 85% 85%, var(--bg-end), transparent 60%),
-        linear-gradient(135deg, var(--bg-start), var(--bg-mid) 55%, var(--bg-end));
-      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color: var(--text);
-      text-align:center;
-    }
-    h1{ font-size:22px; margin-bottom:8px; color:var(--brand); }
-    p{ color:var(--muted); margin:0 0 20px; }
-    .btn{
-      background: var(--brand);
-      color:#fff;
-      border:none;
-      padding:12px 24px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:600;
-      box-shadow: 0 4px 15px rgba(111,140,247,.3);
-    }
-  </style>
+  <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
-  <h1>Login Successful</h1>
-  <p>You may now close this window and return to LINE.</p>
-  <!-- <button class="btn" onclick="window.close()">Close Window</button> -->
-   <div id="details" class="info" style="display:none">
-        <div class="row"><div class="k">Name</div><div class="v" id="name">—</div></div>
-        <div class="row"><div class="k">Staff ID</div><div class="v" id="staffId">—</div></div>
-        <div class="row"><div class="k">Role</div><div class="v" id="role">—</div></div>
-      </div>
+<body class="success-page">
+  <div class="success-card">
+    <div class="success-head">
+      <div class="success-check">✓</div>
+      <h1 class="success-title">เข้าสู่ระบบสำเร็จ</h1>
+      <p class="success-sub">คุณสามารถปิดหน้าต่างนี้และกลับไปที่ LINE ได้เลย</p>
     </div>
-  <p style="color:var(--muted);margin-top:30px;font-size:13px;">©PNL Co., Ltd.</p>
+
+    <dl class="kv" id="details" style="display:none">
+      <div class="row">
+        <dt>ชื่อ :</dt><dd id="name">—</dd>
+      </div>
+      <div class="row">
+        <dt>รหัสพนักงาน :</dt><dd id="staffId">—</dd>
+      </div>
+      <div class="row">
+        <dt>#Role (ชั่วคราว) :</dt>
+        <dd><span id="role" class="role-pill">—</span></dd>
+      </div>
+    </dl>
+
+    <p class="success-copy">©PNL Co., Ltd.</p>
+  </div>
 
   <script>
     (function(){
-      // Read ?name=...&staffId=...&role=...
       const q = new URLSearchParams(location.search);
-      const name = q.get('name') || '';
+      const name    = q.get('name')    || '';
       const staffId = q.get('staffId') || '';
-      const role = q.get('role') || '';
+      const role    = q.get('role')    || '';
 
-      // Fill UI if any value exists
       if (name || staffId || role) {
         document.getElementById('name').textContent = name || '—';
         document.getElementById('staffId').textContent = staffId || '—';
@@ -70,10 +44,10 @@
         document.getElementById('details').style.display = 'block';
       }
 
-      // Optional: try to close LIFF automatically (harmless if not in LIFF)
+      // Try to close LIFF; harmless outside LIFF
       try {
         if (window.liff && typeof liff.closeWindow === 'function') {
-          setTimeout(() => liff.closeWindow(), 1800);
+          setTimeout(() => liff.closeWindow(), 1500);
         }
       } catch {}
     })();
