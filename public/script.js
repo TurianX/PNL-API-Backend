@@ -182,29 +182,32 @@ function goToLiff(nextPath) {
                     return;
                 }
 
-                // ✅ Success: log for devs, then go to success page immediately
+                // ✅ Success: log for devs, then close LIFF or show success page
                 console.log('[STAFF] verified OK', { staffId, role: data.role, name: data.name, pageId: data.pageId });
 
-                // Build success URL with details for the page to display
+                // Build success URL so the page can show details
                 const successUrl = `/success.html?` +
                     `name=${encodeURIComponent(data.name || '')}` +
                     `&staffId=${encodeURIComponent(staffId)}` +
                     `&role=${encodeURIComponent(data.role || '')}`;
 
-                // Fire event (for any listener on liff.html)
+                // Fire event and try to close LIFF
                 document.dispatchEvent(new Event('staffLoginSuccess'));
 
-                // Try to close LIFF in parallel (won't block navigation)
+                let closed = false;
                 try {
                     if (window.liff && typeof liff.closeWindow === 'function') {
-                        // Slight delay so the browser starts navigating; harmless if LIFF really closes.
-                        setTimeout(() => { try { liff.closeWindow(); } catch { } }, 50);
+                        liff.closeWindow();
+                        closed = true;
                     }
-                } catch { }
+                } catch (e) {
+                    console.warn('[STAFF] liff.closeWindow() failed', e);
+                }
 
-                // Navigate now (no back stack jump)
-                location.replace(successUrl);
-                return; // stop further UI updates
+                // Fallback: if still open after 2 seconds, go to success page
+                setTimeout(() => {
+                    if (!closed) window.location.href = successUrl;
+                }, 2000);
 
             } catch (err) {
                 console.error('[STAFF] submit error', err);
