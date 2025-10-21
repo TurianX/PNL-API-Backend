@@ -46,24 +46,36 @@
   <h1>Login Successful</h1>
   <p>You may now close this window and return to LINE.</p>
   <!-- <button class="btn" onclick="window.close()">Close Window</button> -->
+   <div id="details" class="info" style="display:none">
+        <div class="row"><div class="k">Name</div><div class="v" id="name">—</div></div>
+        <div class="row"><div class="k">Staff ID</div><div class="v" id="staffId">—</div></div>
+        <div class="row"><div class="k">Role</div><div class="v" id="role">—</div></div>
+      </div>
+    </div>
   <p style="color:var(--muted);margin-top:30px;font-size:13px;">©PNL Co., Ltd.</p>
 
   <script>
-    (function () {
+    (function(){
+      // Read ?name=...&staffId=...&role=...
       const q = new URLSearchParams(location.search);
       const name = q.get('name') || '';
       const staffId = q.get('staffId') || '';
       const role = q.get('role') || '';
-      const who = document.getElementById('who');
 
-      // Show only what you want users to see (no secrets)
-      // Example: Name (bold), Staff ID, Role
-      const parts = [];
-      if (name)   parts.push(`<div class="row"><span class="label">Name:</span> <span class="value">${name}</span></div>`);
-      if (staffId)parts.push(`<div class="row"><span class="label">Staff ID:</span> <span class="value">${staffId}</span></div>`);
-      if (role)   parts.push(`<div class="row"><span class="label">Role:</span> <span class="value">${role}</span></div>`);
+      // Fill UI if any value exists
+      if (name || staffId || role) {
+        document.getElementById('name').textContent = name || '—';
+        document.getElementById('staffId').textContent = staffId || '—';
+        document.getElementById('role').textContent = role || '—';
+        document.getElementById('details').style.display = 'block';
+      }
 
-      who.innerHTML = parts.join('') || '<div class="row"><span class="label">Status:</span> <span class="value">Signed in</span></div>';
+      // Optional: try to close LIFF automatically (harmless if not in LIFF)
+      try {
+        if (window.liff && typeof liff.closeWindow === 'function') {
+          setTimeout(() => liff.closeWindow(), 1800);
+        }
+      } catch {}
     })();
   </script>
 </body>
