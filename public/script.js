@@ -185,7 +185,13 @@ function goToLiff(nextPath) {
                 // ✅ Success: log for devs, then close LIFF or show success page
                 console.log('[STAFF] verified OK', { staffId, role: data.role, name: data.name, pageId: data.pageId });
 
-                // Fire event and try to close LIFF
+                // Build success URL with details for the page to display
+                const successUrl = `/success.html?` +
+                    `name=${encodeURIComponent(data.name || '')}` +
+                    `&staffId=${encodeURIComponent(staffId)}` +
+                    `&role=${encodeURIComponent(data.role || '')}`;
+
+                // Fire event (for any listener on liff.html) and try to close LIFF directly
                 document.dispatchEvent(new Event('staffLoginSuccess'));
 
                 let closed = false;
@@ -198,9 +204,9 @@ function goToLiff(nextPath) {
                     console.warn('[STAFF] liff.closeWindow() failed', e);
                 }
 
-                // Fallback: if still open after 2 seconds, go to success page
+                // Fallback: if still open after 2s, go to success page (with details)
                 setTimeout(() => {
-                    if (!closed) window.location.href = '/success.html';
+                    if (!closed) window.location.href = successUrl;
                 }, 2000);
 
             } catch (err) {
